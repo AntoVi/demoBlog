@@ -1,0 +1,63 @@
+{% extends "base.html.twig" %}
+
+{# Ce block title fait référence au block 'title ' déclaré 
+dans  base.html.twig  #}
+{% block title %}
+    Template Home
+{% endblock %}
+
+{# Ce block body fait référence au block 'body ' déclaré 
+dans  base.html.twig  #}
+{% block body %}
+    
+
+
+
+{# Title est une variable twig qui ne sort pas de nul part
+elle provient du controller BlogController et plus précisement 
+de la méthode render définit dans la méthode 
+home () 
+
+
+Tous ce qui est triaté dans les templates vient forcément de controller
+
+TWIG est un langage de rendu, un moteur de template :
+-  simplicité du langage 
+- Absence de PHP au sein de l'affichage 
+-Plus simple pour un intégrateur 
+- plus rapide à l'exécution
+
+
+
+{{  }} -> Interpolation
+
+{% %} -> commande (cmd : ex : if/else | for/endfor)
+ #}
+
+<h1 class ="text-center my-5"> {{ title }} </h1>
+{#  25 > 18 #}
+{% if age > 18 %}
+    <p> tu es majeur </p> 
+{% else %} 
+     <p> tu es mineur </p> 
+{% endif %}
+
+<p> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Similique,
+ nobis? Debitis quidem dicta quisquam cupiditate excepturi, eveniet vel iure amet aliquam, 
+ qui quibusdam esse et cumque aliquid aperiam modi quos quas doloribus incidunt. Tempore 
+  aperiam, sit corrupti accusamus incidunt maiores quasi ratione ab officia iste aut eaque sint 
+  vitae. Animi quia aliquid beatae laboriosam odio sapiente, totam debitis ad tenetur modi repellendus
+   iusto sed, deleniti culpa amet ipsum dolor incidunt quibusdam. Voluptatum ut sunt error ipsa porro, 
+   fugiat excepturi adipisci nisi omnis vero possimus sapiente aut nesciunt pariatur laborum ad.
+ Autem, reiciendis. Error maiores omnis explicabo, reprehenderit quae laborum!</p>
+
+ <p> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Similique,
+ nobis? Debitis quidem dicta quisquam cupiditate excepturi, eveniet vel iure amet aliquam, 
+ qui quibusdam esse et cumque aliquid aperiam modi quos quas doloribus incidunt. Tempore 
+  aperiam, sit corrupti accusamus incidunt maiores quasi ratione ab officia iste aut eaque sint 
+  vitae. Animi quia aliquid beatae laboriosam odio sapiente, totam debitis ad tenetur modi repellendus
+   iusto sed, deleniti culpa amet ipsum dolor incidunt quibusdam. Voluptatum ut sunt error ipsa porro, 
+   fugiat excepturi adipisci nisi omnis vero possimus sapiente aut nesciunt pariatur laborum ad.
+ Autem, reiciendis. Error maiores omnis explicabo, reprehenderit quae laborum!</p>
+
+{% endblock %}

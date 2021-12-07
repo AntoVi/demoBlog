@@ -1,0 +1,49 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    BlogSymfony | Liste des articles
+{% endblock %}
+
+{% block body %}
+    <div class="row mb-2">
+
+        {# cet objet 'catalogues' ne sort pas de nul part, c'est ce que le controller 
+        a transmit au template, c'est à dire l'ensemble des articles selectionnées en BDD #}
+        {{ dump(catalogues) }}
+
+        {# 'data' ne sort pas de nul part, c'est une variable de réception que nous définissons
+        dans la boucle FOR qui receptionne 1 article par tour  de boucle FOR #}
+        {% for data in catalogues %}
+            
+       
+
+        <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm 
+                position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                    <strong class="d-inline-block mb-2 text-success">Films</strong>
+                    <h3 class="mb-0">{{data.titre}}</h3>
+                    {# Pour la date, ce que retourne la BDD est un objet issu de la classe DateTime, 
+                    donc on ne va pas convertir un objet en une chaine de caractères, pour cela nous
+                    devons utiliser la fonction date() de twig  #}
+                    <h4 class="mb-0">{{data.date|date("Y-m-d")}}</h4>
+                    {# slice(0, 100): filtre twig qui retourne une partie de la chaine de caractère #}
+                    {# striptags: filtre twig qui supprime les balises html #}
+                    <p class="mb-auto">{{data.contenu|slice(0, 100)|striptags }}[..]</p>
+
+                    {# On fournit à la route l'id de l'article à transmettre dans l'URL #}
+                    {# La route 'blog_show' est une route paramétrée, on doit lui transmettre un id dans l'URL #}
+                    <a href="{{ path('blog_show', {'id': data.id}) }}" class="stretched-link">Voir....</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                    {# replace(): fonction twig permettant de remplacer un élément dans une chaine de caractères #}
+                        <img src="{{data.photo|replace({'300/500': '200/250'}) }}" alt="{{ data.titre }}">
+                    </div>
+                </div>
+            </div>
+
+         {% endfor %}
+
+       
+    </div>
+{% endblock %}
