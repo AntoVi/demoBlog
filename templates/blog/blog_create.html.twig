@@ -1,12 +1,30 @@
 {% extends "base.html.twig" %}
 
 {% block title %}
-    Blog Symfony | Nouveau catalogue
+
+    Blog Symfony 
+
+     {% if editMode %}
+        Modification de l'article
+    {% else %}
+        {# Sinon l'article ne possède pas d'id, c'est une insertion #}
+        Nouvel article
+    {% endif %}
+
 {% endblock %}
 
 {% block body %}
     
-    <h1 class="text-center my-5">Nouveau catalogue</h1>
+    <h1 class="text-center my-5">
+    {# Si editMode renvoi TRUE, cela veut dire que l'id possède un ID, c'est une modification #}
+    {% if editMode %}
+        Modification de l'article
+    {% else %}
+        {# Sinon l'article ne possède pas d'id, c'est une insertion #}
+        Nouvel article
+    {% endif %}
+    
+    </h1>
     {# 1ère version du formulaire #}
     {# <div class="container">
         <form method="post">
@@ -39,10 +57,29 @@
     {{ form_start(formCatalogue) }}
 
         {{ form_row(formCatalogue.titre) }}
-        {{ form_row(formCatalogue.contenu) }}
-        {{ form_row(formCatalogue.photo) }}
-        <button type="submit" class="btn btn-dark btn-blog mb-5 "> Enregistrer </button>
 
+        {{ form_row(formCatalogue.contenu) }}
+
+        {{ form_row(formCatalogue.photo) }}
+        {# Si photoActuelle retourne TRUE, cela veut dire que l'article possède une photo, c'est une
+        modification, alors on entre dans la condition IF et on affiche la photo actuelle de l'article #}
+        {% if photoActuelle %}   
+            
+                <em> Vous pouvez uploader une nouvelle photo si vous souhaitez la modifier </em>
+            <p class="col-2">
+                <img src="{{ asset('uploads/photos/' ~ photoActuelle) }}" alt="" class"col-12 img-responsive">
+            </p>
+       
+        {% endif %}
+
+        <button type="submit" class="btn btn-dark btn-blog mb-5 "> 
+
+       {% if editMode %}
+        Enregistrer les modifications
+        {% else %}
+
+        Enregistrer
+        {% endif %}
      {{ form_end(formCatalogue) }}
 
 {% endblock %}
