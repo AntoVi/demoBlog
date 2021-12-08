@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BlogController extends AbstractController
 {
@@ -77,7 +79,8 @@ class BlogController extends AbstractController
      # Méthode permettant d'insérer / modifier un article en BDD
      #[Route('/blog/new', name: 'blog_create')]
      #[Route('/blog/{id}/edit', name: 'blog_edit')]
-     public function blogCreate(Catalogue $catalogue = null, Request $request, EntityManagerInterface $manager): Response 
+     public function blogCreate(Catalogue $catalogue = null, Request $request, EntityManagerInterface $manager,
+     SluggerInterface $slugger): Response 
      {
          // La classe Request de Symfony contient toutes les données 
          // véhiculées par les superglobales ($_GET, $_POST, $_SERVER, $_COOKIE etc...)
@@ -112,6 +115,14 @@ class BlogController extends AbstractController
         //     $manager->flush();
         // }
 
+        // Si la condition IF retourne TRUE, cela veut dire que $catalogue contient un article stocké
+        // en BDD, on stock la photo actuelle de l'article dans la variable $photoActuelle
+
+        if($catalogue)
+        {
+            $photoActuelle = $catalogue->getPhoto();
+        }
+
         // Si la variable est null, cela veut dire que nous sommes sur la route ' /blog/new',
         // On entre dans le IF et on crée une nouvelle instance de l'entité Catalogue
         // Si la variable $catalogue n'est pas null, cela veut dire que nous sommes sur la route
@@ -129,24 +140,98 @@ class BlogController extends AbstractController
 
         $formCatalogue->handleRequest($request);
 
+
+        // Si le formulaire a bien été validé (isSubmitted) et que l'objet entité est correctement remplit
+        //(isValid) alors on entre dans le condition IF 
         if($formCatalogue->isSubmitted() && $formCatalogue->isValid())
         {
             // Le seul setter que l'on appel de l'entité, c'est celui de la date
             // puisqu'il n'y a pas de champ 'date' dans le formulaire
-            $catalogue->setDate(new \DateTime());
+
+            // Si l'article ne possède pas d'ID, c'est une insertion, alors on entre 
+            //dans la condition IF et on génère une date de catalogue
+
+            if(!$catalogue->getId())
+                $catalogue->setDate(new \DateTime());
 
 
-            // dd($catalogue);
+            // DEBUT Traitement DE LA PHOTO 
+            // On récupère toutes les informations de l'image uploadée dans le formulaire 
+            $photo = $formCatalogue->get('photo')->getData();
+            
+
+            if($photo) // si une photo est uploadé dans le formulaire, on entre dans le IF et on 
+            // traite l'image 
+            {
+                // On récupère le nom d'origine de la photo
+                $nomOriginePhoto = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+              
+
+                // cela est nécessaire pour inclure en toute sécurité le nom du fichier dans l'URL 
+                $secureNomPhoto = $slugger->slug($nomOriginePhoto);
+
+                //                  Pirate              -   88484848    .       jpg
+                $nouveauNomFichier = $secureNomPhoto . '-' . uniqid() . '.' . $photo->guessExtension();
+
+                
+
+                try // on tente de copier l'image dans le dossier
+                {
+                    // On copie l'image vers le bon chemin, vers le bon dossier 'public/uploads/photos'
+                    // (services.yaml)
+                    $photo->move(
+                        $this->getParameter('photo_directory'),
+                        $nouveauNomFichier
+                    );
+                }
+                catch(FileException $e)
+                {
+
+                }
+                // on insère le nom de l'image dans la bdd 
+                $catalogue->setPhoto($nouveauNomFichier);
+            }
+            else // Sinon aucune image n'a été uploadé, on renvoi dans la bdd la photo actuelle de 
+            // l'article 
+            {
+                // Si la photo actuelle est définit en BDD, alors en cas de modifications, si on ne change pas 
+                // de photo, on renvoi la photo actuelle en BDD
+                if(isset($photoActuelle))
+                    $catalogue->setPhoto($photoActuelle);
+                else 
+                    // Sinon aucune photo n'a été uploadé, on envoi la valeur NULL en BDD pour la photo
+                    $catalogue->setPhoto(null);
+            }
+
+            // FIN TRAITEMENT PHOTO
+
+            // message de validation en session 
+            if(!$catalogue->getId())
+                $txt = "enregistré";
+            else 
+                $txt = "modifié";
+
+            //méthode permettant d'enregistrer des messages utilisateurs accessibles en session
+            $this->addFlash('success', "L'article a été $txt avec succès !");
 
             $manager->persist($catalogue); 
             $manager->flush();
+
+            // Une fois l'insertion/modification executée en BDD, on redirige
+            // l'internaute vers le détail de l'article, on transmet l'id à fournir dans 
+            // l'url en 2eme paramètre de la méthode redirectToRoute()
+            return $this->redirectToRoute('blog_show', [
+                'id' => $catalogue->getId()
+            ]);
         }
 
          return $this->render('blog/blog_create.html.twig', [
-             'formCatalogue' => $formCatalogue->createView() // on transmet le formulaire au template 
+             'formCatalogue' => $formCatalogue->createView(), // on transmet le formulaire au template 
              // afin de pouvoir l'afficher avec Twig
              // createView() retourne un petit objet qui représente l'affichage du formulaire, 
              // on le récupère dans le template blog_create.html.twig
+             'editMode' => $catalogue->getId(),
+             'photoActuelle' => $catalogue->getPhoto()
          ]);
      }
 
