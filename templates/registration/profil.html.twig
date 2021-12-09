@@ -12,8 +12,12 @@
 
 
 <div class="col-md-5 mx-auto card shadow-sm mb-5">
-    <h5 class="card-header text-center">Vos données personnelle</h5>
+    <h5 class="card-header text-center">Vos données personnelles</h5>
     <div class="card-body">
+
+    {% if app.user.roles.0 == 'ROLE_ADMIN' %}
+        <p class="text-center text-secondary"> Vous êtes ADMINISTRATEUR du site </p>
+    {% endif %}
 
 
             <p class="card-text d-flex justify-content-between">
@@ -36,7 +40,7 @@
             </p>
 
 
-        <a href="#" class="btn btn-dark">Modifier</a>
+        <a href="{{ path('app_profil_edit', {'id': app.user.id}) }}" class="btn btn-dark">Modifier</a>
     </div>
 </div>
 

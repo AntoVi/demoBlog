@@ -1,0 +1,82 @@
+{% extends "base_admin.html.twig" %}
+
+{% block title %}
+    BlogSymfony | Gestion des catalogues
+{% endblock %}
+
+{% block body %}
+
+    <table class="table table-striped">
+        {# colonnes : objet (BackOfficeController) qui contient tous les noms des <champs>
+        <colonnes de la table SQL catalogue #}
+        <tr>
+        {% for data in colonnes %}
+
+            {% if data != 'id' %}
+
+                {# capitalize : filtre TWIG : filtre twig permettant de mettre la 1ère lette de la chaine de catatère en majuscule #}
+            <th>{{ data|capitalize }}</th> 
+                
+            {% endif %}
+
+        
+        
+        {% endfor %}
+
+        <th>Catégorie</th>
+        <th>Nb Comm</th>
+        <th>Actions</th>
+
+        </tr>
+        {% for cat in catalogues %}
+
+        <tr>
+
+            <td>
+                {{ cat.titre }}
+            </td>
+
+            <td>
+                {{ cat.contenu|slice(0,60)|striptags }}
+            </td>
+            <td>
+                {% if cat.photo != null %}
+                                
+                            <div class="col-6 d-none d-lg-block">
+                                <img src="{{ asset('uploads/photos/' ~ cat.photo) }}" alt="{{ cat.titre }}" class="col-12 img-responsive" >
+                            </div>
+
+                {% endif %}
+            </td>
+
+            <td>
+                {{cat.date|date('d/m/Y')}} à {{cat.date|date('H:i:s')}}
+            </td>
+
+            <td>
+                {{ cat.category.titre }}
+            </td>
+
+            <td>
+                {{ cat.comments|length }}
+            </td>
+
+            <td>
+                <a href=""><i class="bi bi-pencil-fill"></i></a>
+
+                <a href=""><i class="bi bi-trash-fill text-danger"></i></a>
+            </td>
+
+            
+            </th>
+                
+            {% endfor %}
+
+                
+        
+       </tr>
+
+    </table>    
+
+
+{% endblock %}
