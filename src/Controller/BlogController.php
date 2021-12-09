@@ -3,16 +3,18 @@
 namespace App\Controller;
 
 use App\Entity\Catalogue;
+use App\Entity\Comment;
 use App\Form\CatalogueType;
+use App\Form\CommentairesType;
 use App\Repository\CatalogueRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class BlogController extends AbstractController
 {
@@ -69,6 +71,7 @@ class BlogController extends AbstractController
         // de selectionner l'ensemble de la table SQL et de récupérer un tableau
         // multi contenant l'ensemble des articles stocké en BDD
         $catalogue = $repoCatalogue->findAll(); // SELECT  * FROM catalogue + FETCH_ALL
+       
         // dd($catalogue);
 
         return $this->render('blog/blog.html.twig', [
@@ -239,8 +242,13 @@ class BlogController extends AbstractController
     // On définit un route 'paramétrée' {id}, ici la route permet de recevoir l'id d'un article stocké en BDD 
 
     //      / blog/5
+
+
+    
+
+
     #[Route('/blog/{id}', name:'blog_show')]
-    public function blogShow(Catalogue $catalogue): Response 
+    public function blogShow(Catalogue $catalogue, Request $request, EntityManagerInterface $manager): Response 
     {
 
         /*
@@ -252,6 +260,45 @@ class BlogController extends AbstractController
             de reception $catalogue 
 
         */
+
+            // Cette méthode mise à disposition retourne un objet app/entity/article contnant toute les
+            //données de l'utilisateur authentifié sur le site
+            $user =$this->getUser();
+          
+        
+            $comments = new Comment;
+        
+        $formCommentaires = $this->createForm(CommentairesType::class, $comments); 
+
+        $formCommentaires->handleRequest($request);
+
+
+        
+        if($formCommentaires->isSubmitted() && $formCommentaires->isValid())
+        {
+            
+
+            
+                $comments->setDate(new \DateTime());
+
+                $comments->setArticle($catalogue); // on relie le commentaire le catalogue
+
+
+                $manager->persist($comments); 
+                $manager->flush();
+
+                $this->addFlash('success', "Le commentaire a été posté avec succès !");
+
+                return $this->redirectToRoute('blog_show', [
+                    'id' => $catalogue->getId()
+                ]);
+
+             
+
+
+           
+        }
+
 
 
         // dd($catalogue);
@@ -268,8 +315,9 @@ class BlogController extends AbstractController
         //dans la variable de réception $id
         // dd($id); //5
         return $this->render('blog/blog_show.html.twig', [
-            'catalogue' => $catalogue // on transmet au template l'article selectionné en BDD afin que 
+            'catalogue' => $catalogue, // on transmet au template l'article selectionné en BDD afin que 
             // twig puisse traiter et afficher les données sur la page
+            'formCommentaires' => $formCommentaires->createView()
         ]);
     }
 

@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Catalogue;
+use App\Entity\Category;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
@@ -36,6 +38,13 @@ class CatalogueType extends AbstractType
                         'message' => "Merci de saisir un titre de catalogue"
                     ])
                 ]
+            ])
+            // On définit le champ permettant d'associer une catégorie à l'article dans le formulaire
+            // Ce champ provient d'une autre entité, en gros c la clé étrangère
+            ->add('category', EntityType::class, [
+                'label' => "Choisir une catégorie",
+                'class' => Category::class, // On précise de quelle entité vient de ce champ
+                'choice_label' => 'titre' // on définit la valeur qui apparaitra dans la liste déroulante
             ])
             ->add('contenu', TextareaType::class, [
                 'label' => "Contenu de l'article",

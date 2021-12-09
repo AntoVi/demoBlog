@@ -1,0 +1,44 @@
+{% extends "base.html.twig" %}
+
+{% block title %}   
+
+    BlogSymfony | profil
+    
+{% endblock %}
+
+
+{% block body %}
+
+
+
+<div class="col-md-5 mx-auto card shadow-sm mb-5">
+    <h5 class="card-header text-center">Vos données personnelle</h5>
+    <div class="card-body">
+
+
+            <p class="card-text d-flex justify-content-between">
+               prenom :  {{ app.user.prenom }}
+            </p>
+            <p class="card-text d-flex justify-content-between">
+              nom :   {{ app.user.nom }}
+            </p>
+            <p class="card-text d-flex justify-content-between">
+               mail :  {{ app.user.email }}
+            </p>
+            <p class="card-text d-flex justify-content-between">
+                adresse : {{ app.user.adresse }}
+            </p>
+            <p class="card-text d-flex justify-content-between">
+                ville : {{ app.user.ville }}
+            </p>
+            <p class="card-text d-flex justify-content-between">
+                code postal : {{ app.user.codePostal}}
+            </p>
+
+
+        <a href="#" class="btn btn-dark">Modifier</a>
+    </div>
+</div>
+
+    
+{% endblock %}

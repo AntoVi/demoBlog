@@ -13,7 +13,11 @@
 
         {# 'data' ne sort pas de nul part, c'est une variable de réception que nous définissons
         dans la boucle FOR qui receptionne 1 article par tour  de boucle FOR #}
+
+       
         {% for data in catalogues %}
+
+
         
         {# Si il y a une photo en BDD, on définit un col-8 dans la div #}
         {% if data.photo != null %}
@@ -27,7 +31,7 @@
                 <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm 
                 position-relative">
                     <div class="col-{{ col }} p-4 d-flex flex-column position-static">
-                    <strong class="d-inline-block mb-2 text-success">Films</strong>
+                    <strong class="d-inline-block mb-2 text-success">{{ data.category.titre }}</strong>
                     <h3 class="mb-0">{{data.titre}}</h3>
                     {# Pour la date, ce que retourne la BDD est un objet issu de la classe DateTime, 
                     donc on ne va pas convertir un objet en une chaine de caractères, pour cela nous
