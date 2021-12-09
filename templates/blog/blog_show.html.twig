@@ -35,7 +35,7 @@
             <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm 
             position-relative">
                 <div class="col p-4 d-flex flex-column position-static">
-                <strong class="d-inline-block mb-2 text-success">Films</strong>
+                <strong class="d-inline-block mb-2 text-success">{{ catalogue.category.titre }}</strong>
                 <h3 class="mb-0">{{catalogue.titre}}</h3>
                 <h4 class="mb-0">publié le {{catalogue.date|date('d/m/Y')}} à {{catalogue.date|date('H:i:s')}}</h4>
                 <p class="mb-auto">{{catalogue.contenu|slice(0, 100)|striptags}}[..]</p>
@@ -54,5 +54,76 @@
 
                 {% endif %}
             </div>
+
+            <h2 class="mt-4"> Donner votre avis</h2>
+
+            {% if app.user %}
+
+            {{ form_start(formCommentaires) }}
+
+            
+            {{ form_row(formCommentaires.auteur) }}
+            {{ form_row(formCommentaires.commentaire) }}
+
+
+            <button type="submit" class="btn btn-dark btn-blog mb-5 "> Envoyer </button>
+
+       
+         {{ form_end(formCommentaires) }}
+
+            {% else %}
+                <p><a class="link-secondary" href="{{ path('app_login') }}">Identifiez-vous</a> ou <a class="link-secondary" href="{{ path('app_register') }}">Créer votre compte</a></p>
+            {% endif %}
+
+
+         
+
+            {#  Exo : Réaliser un formulaire permettant d'insérer des nouveaux commentaires en BDD
+            1 . créer le formulaire à partir de l'entité Comment (make:form)
+            2. dans le controller, il faut importer et créer le formulaire (createForm)
+            3. Afficher le formulaire sur le template (form_start() / form_row())
+            4 . A la validation du formulaire, executer la requete d'insertion (persist() / flush())
+            5. Après l'insertion, rediriger l'internaute et afficher un message de validation (addFlash)
+            6. Faites en sorte d'afficher 'soyez le premier à poster un commentaire si aucun com n'est associé à catalogue
+             #}
+
+            <h2 class="mt-4"> Derniers avis...</h2>
+
+            {# catalogue.comments est un ensemble de résultats qui contient tous les commentaires
+            liés à l'article stockés en BDD #}
+            {# En selectionnant l'article en BDD, nous avons automatiquement accès à toutes les correspondances dans les autres
+            tables SQL (relation bi-directionnelle) #}
+            {# comment est une variable qui receptionne 1 ligne de commentaire par tour de boucle FOR #}
+            {# Si catalogue.comments n'est pas vide, cela veut dire qu'il y'a des commentaires postés, on entre dans le IF #}
+
+            {% if catalogue.comments is not empty %}
+                
+            
+
+                {% for comment in catalogue.comments %}
+                    
+                    {# {{ dump(comment) }} #}
+
+                <div class="d-flex flex-column mb-2 border border-dark rounded  ml-2 p-2">
+                
+                    <div class="col-4 pl-1 pt-2 mt-2">
+                    publié par <strong> {{ comment.auteur }} </strong> <small>(le {{ comment.date|date('d/m/Y') }} à {{ comment.date|date('H:i:s') }}) : </small>
+                    </div>
+                    <div class="col-6">
+                    {{ comment.commentaire|striptags }}
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+            {# Sinon, aucun commentaire posté, on entre dans le else #}
+            <p class="fts-italic text-center mb-5"> Soyez le premier à donner votre avis....</p>
+
+            {% endif %}
+
+            
+            
         </div>
  {% endblock %}
