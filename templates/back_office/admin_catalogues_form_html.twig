@@ -1,0 +1,65 @@
+{% extends "base_admin.html.twig" %}
+
+{% block title %}
+
+    Blog Symfony 
+
+   
+        Modification de l'article
+  
+
+{% endblock %}
+
+{% block body %}
+
+    {% for message in app.flashes('success') %}
+
+        <div class= "col-4 mx-auto text-center bg-success p-3 text-white mb-3">
+            {{ message }}
+        </div>
+        
+    {% endfor %}
+    <div class="container">
+    <h1 class="text-center my-5">
+    {# Si editMode renvoi TRUE, cela veut dire que l'id possède un ID, c'est une modification #}
+   
+        Modification de l'article
+  
+    
+    </h1>
+    
+
+    {{ form_start(formAdminCatalogue) }}
+
+        {{ form_row(formAdminCatalogue.titre) }}
+
+        {{ form_row(formAdminCatalogue.category, {'attr': {'class': 'w-25'}}) }}
+
+        {{ form_row(formAdminCatalogue.contenu) }}
+
+       
+        {# Si photoActuelle retourne TRUE, cela veut dire que l'article possède une photo, c'est une
+        modification, alors on entre dans la condition IF et on affiche la photo actuelle de l'article #}
+        <div class=" d-flex flex-column justify-content-evenly  align-items-center mb-2">
+             {{ form_row(formAdminCatalogue.photo, {'attr': {'class': 'col-1 mx-auto'}}) }}
+        {% if photoActuelle %}   
+            
+                <em> Image actuelle : </em>
+           
+                <img src="{{ asset('uploads/photos/' ~ photoActuelle) }}" alt="" class"col-1 img-responsive">
+          
+       
+        {% endif %}
+
+        </div>
+        
+        <button type="submit" class="btn btn-dark btn-blog d-block mx-auto "> 
+
+      
+        Enregistrer les modifications
+      
+     {{ form_end(formAdminCatalogue) }}
+
+     </div>
+
+{% endblock %}

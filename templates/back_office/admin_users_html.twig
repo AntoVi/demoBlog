@@ -5,5 +5,86 @@
 {% endblock %}
 
 {% block body %}
+
+    {% for message in app.flashes('success') %}
+
+        <div class="col-4 mx-auto text-center bg-success p-3 text-white mb-3">
+                {{ message }}
+        </div>
+        
+    {% endfor %}
+
     <h1 class= "text-center">Liste des utilisateurs</h1>
+
+     <table class="table table-striped">
+        
+        <tr>
+        {% for data in table %}
+
+            {% if data != 'id' and data != 'password' %}
+
+                
+            <th>{{ data|capitalize }}</th> 
+                
+            {% endif %}
+
+        
+        
+        {% endfor %}
+
+        <th>Actions</th>
+
+
+       
+
+        </tr>
+        {% for uti in user %}
+        
+        <tr>
+
+            <td>
+                {{ uti.email }}
+            </td>
+
+            <td>
+                {{ uti.roles[0]|slice(5,15) }}
+            </td>
+            <td>
+                {{ uti.prenom }}
+            </td>
+
+            <td>
+                {{ uti.nom }}
+            </td>
+
+            <td>
+                {{ uti.adresse }}
+            </td>
+
+           <td>
+                {{ uti.ville }}
+            </td>
+
+           <td>
+                {{ uti.codePostal }}
+            </td>
+
+            <td>
+                <a href=""><i class="bi bi-pencil-fill"></i></a>
+
+                <a href="{{ path('app_admin_user_remove', {'id': uti.id}) }}" 
+                onclick ="return(confirm('Voulez-vous réellement supprimer l\'utilisateur n° {{uti.id }}'));">
+                <i class="bi bi-trash-fill text-danger"></i></a>
+            </td>
+            
+            </th>
+                
+            {% endfor %}
+
+                
+        
+       </tr>
+
+    </table>    
+
 {% endblock %}

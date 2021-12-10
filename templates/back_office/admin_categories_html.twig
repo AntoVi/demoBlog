@@ -5,5 +5,53 @@
 {% endblock %}
 
 {% block body %}
+
     <h1 class= "text-center">Liste des catégories</h1>
+
+    {% for message in app.flashes('success') %}
+
+        <div class="col-4 mx-auto bg-success text-white p-3 mb-3">
+            {{ message }}
+        </div>
+
+    {% endfor %}
+
+    <table class="table table-striped" id="table-category">
+        <thead>
+            {# colonnes : objet (BackOfficeController) qui contient tous les noms des <champs>
+            <colonnes de la table SQL catalogue #}
+            <tr>
+            {% for data in colonnes %}
+
+                {% if data != 'id' %}
+
+                    {# capitalize : filtre TWIG : filtre twig permettant de mettre la 1ère lette de la chaine de catatère en majuscule #}
+                <th>{{ data|capitalize }}</th> 
+                    
+                {% endif %}
+
+            {% endfor %}
+                <th>Nb Catalogue</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cate in categories %}
+
+            <tr>
+                <td> {{ cate.titre }} </td>
+                <td> {{ cate.description }} </td>
+                <td> {{ cate.catalogues|length }} </td>
+                <td> 
+                    <a href=""> <i class="bi bi-pencil-fill"></i> </a>
+                    <a href="{{ path('app_admin_categorie_remove', {'id': cate.id}) }}" 
+                    onclick ="return(confirm('Voulez-vous réellement supprimer la catégorie n° {{cate.id }}'));">
+                        <i class="bi bi-trash-fill text-danger"></i> 
+                    </a>
+                </td>
+            </tr>
+            
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

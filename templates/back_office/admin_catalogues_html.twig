@@ -6,76 +6,94 @@
 
 {% block body %}
 
-    <table class="table table-striped">
-        {# colonnes : objet (BackOfficeController) qui contient tous les noms des <champs>
-        <colonnes de la table SQL catalogue #}
-        <tr>
-        {% for data in colonnes %}
+    {% for message in app.flashes('success') %}
 
-            {% if data != 'id' %}
-
-                {# capitalize : filtre TWIG : filtre twig permettant de mettre la 1ère lette de la chaine de catatère en majuscule #}
-            <th>{{ data|capitalize }}</th> 
-                
-            {% endif %}
-
+        <div class="col-4 mx-auto text-center bg-success p-3 text-white mb-3">
+            {{ message }}
+        </div>
         
-        
-        {% endfor %}
+    {% endfor %}
 
-        <th>Catégorie</th>
-        <th>Nb Comm</th>
-        <th>Actions</th>
+    <table class="table table-striped" id="table-backoffice">
+    <thead>
+            {# colonnes : objet (BackOfficeController) qui contient tous les noms des <champs>
+            <colonnes de la table SQL catalogue #}
+            <tr>
+            {% for data in colonnes %}
 
-        </tr>
-        {% for cat in catalogues %}
+                {% if data != 'id' %}
 
-        <tr>
-
-            <td>
-                {{ cat.titre }}
-            </td>
-
-            <td>
-                {{ cat.contenu|slice(0,60)|striptags }}
-            </td>
-            <td>
-                {% if cat.photo != null %}
-                                
-                            <div class="col-6 d-none d-lg-block">
-                                <img src="{{ asset('uploads/photos/' ~ cat.photo) }}" alt="{{ cat.titre }}" class="col-12 img-responsive" >
-                            </div>
-
+                    {# capitalize : filtre TWIG : filtre twig permettant de mettre la 1ère lette de la chaine de catatère en majuscule #}
+                <th>{{ data|capitalize }}</th> 
+                    
                 {% endif %}
-            </td>
-
-            <td>
-                {{cat.date|date('d/m/Y')}} à {{cat.date|date('H:i:s')}}
-            </td>
-
-            <td>
-                {{ cat.category.titre }}
-            </td>
-
-            <td>
-                {{ cat.comments|length }}
-            </td>
-
-            <td>
-                <a href=""><i class="bi bi-pencil-fill"></i></a>
-
-                <a href=""><i class="bi bi-trash-fill text-danger"></i></a>
-            </td>
 
             
-            </th>
-                
+            
             {% endfor %}
 
-                
-        
-       </tr>
+            <th>Catégorie</th>
+            <th>Nb Comm</th>
+            <th>Actions</th>
 
+            </tr>
+        </thead>
+        <tbody>
+            {% for cat in catalogues %}
+
+            <tr>
+
+                <td>
+                    {{ cat.titre }}
+                </td>
+
+                <td>
+                    {{ cat.contenu|slice(0,60)|striptags }}
+                </td>
+                <td>
+                {# Si la valeur de la photo en BDD est différente de null, cela veut dire qu'une photo a bien 
+                été téléchargée, on entre dans le IF et on affiche l'image  #}
+                    {% if cat.photo != null %}
+                                    
+                                <div class="col-6 d-none d-lg-block">
+                                    <img src="{{ asset('uploads/photos/' ~ cat.photo) }}" alt="{{ cat.titre }}" class="col-12 img-responsive" >
+                                </div>
+                    {% else %}
+
+                    <p>Aucune photo</p>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {{cat.date|date('d/m/Y')}} à {{cat.date|date('H:i:s')}}
+                </td>
+
+                <td>
+                    {{ cat.category.titre }}
+                </td>
+
+                <td>
+                    {{ cat.comments|length }}
+                </td>
+
+                <td>
+                    <a href="{{ path('app_admin_catalogues_form', {'id': cat.id}) }}"><i class="bi bi-pencil-fill"></i></a>
+
+                    <a href="{{ path('app_admin_catalogue_remove', {'id': cat.id}) }}" 
+                    onclick ="return(confirm('Voulez-vous réellement supprimer le catalogue n° {{cat.id }}'));">
+                    <i class="bi bi-trash-fill text-danger"></i></a>
+                </td>
+
+                
+                </th>
+                    
+                
+
+                    
+            
+        </tr>
+        {% endfor %}
+        </tbody>
     </table>    
 
 
