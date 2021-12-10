@@ -16,6 +16,10 @@ body {
     overflow-x: auto;
     overflow-y: hidden;
   }
+
+  .conteneur-principal-admin{
+    overflow-x: hidden !important;
+  }
   
   .b-example-divider {
     flex-shrink: 0;
@@ -87,3 +91,5 @@ body {
   
   .fw-semibold { font-weight: 600; }
   .lh-tight { line-height: 1.25; }
+
+ 

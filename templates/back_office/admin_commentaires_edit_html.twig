@@ -1,0 +1,36 @@
+{% extends "base_admin.html.twig" %}
+
+{% block title %}
+
+    Blog Symfony 
+
+   
+        Modification des commentaires
+  
+
+{% endblock %}
+
+{% block body %}
+    
+    <h1 class="text-center my-5">
+    {# Si editMode renvoi TRUE, cela veut dire que l'id possède un ID, c'est une modification #}
+   
+        Modification des commentaires
+  
+    
+    </h1>
+    
+
+    {{ form_start(formCommentaires) }}
+
+            
+            {{ form_row(formCommentaires.auteur) }}
+            {{ form_row(formCommentaires.commentaire) }}
+
+
+            <button type="submit" class="btn btn-dark btn-blog mb-5 "> Envoyer </button>
+
+       
+         {{ form_end(formCommentaires) }}
+         
+{% endblock %}

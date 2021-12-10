@@ -32,6 +32,16 @@
       }
     </style>
 
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css"> 
+
+    <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
+
+    <script src="{{ asset('js/dataTable.js') }}"></script>
+
     {% block stylesheets %}
         
     {% endblock %}
@@ -57,6 +67,12 @@
                     <a href="{{ path('app_admin') }}" class="nav-link active" aria-current="page">
                     <i class="bi bi-house-door-fill"></i>
                     Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ path('app_admin_catalogues_create') }}" class="nav-link text-white">
+                   <i class="bi bi-book-fill"></i>
+                    Nouveau Catalogue
                     </a>
                 </li>
                 <li>
@@ -100,7 +116,7 @@
                 </div>
             </div>
 
-            <div class="p-2" style="width: 80%; margin-left: 20%; height: auto; overflow-y: auto;">
+            <div class="p-2" style="width: 80%; margin-left: 20%; height: auto; overflow-y: auto; overflow-x: hidden;" >
             {% block body %}
                 
             {% endblock %}
