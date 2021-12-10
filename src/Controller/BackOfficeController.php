@@ -45,6 +45,8 @@ class BackOfficeController extends AbstractController
         ]);
     }
 
+    
+
     #[Route('/admin/categories', name: 'app_admin_categorie')]
     public function adminCategories(EntityManagerInterface $manager): Response
     {
