@@ -69,8 +69,8 @@
                 {{ uti.codePostal }}
             </td>
 
-            <td>
-                <a href=""><i class="bi bi-pencil-fill"></i></a>
+            <td class="d-flex flex-column">
+                <a href=" {{ path('app_admin_user_edit', {'id': uti.id}) }}"><i class="bi bi-pencil-fill"></i></a>
 
                 <a href="{{ path('app_admin_user_remove', {'id': uti.id}) }}" 
                 onclick ="return(confirm('Voulez-vous réellement supprimer l\'utilisateur n° {{uti.id }}'));">

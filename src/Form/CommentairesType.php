@@ -16,7 +16,10 @@ class CommentairesType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
+
+        if($options['commentFormBack'] == true)
+        {
+            $builder
             ->add('auteur', TextType::class, [
                 'label' => "Votre nom/pseudo",
                 'required' => false,
@@ -48,15 +51,35 @@ class CommentairesType extends AbstractType
                         'message' => "Merci de saisir un commentaire"
                     ])
                 ]
-            ])
-            
-        ;
+            ]);
+        }
+        elseif($options['commentFormFront'] == true)
+        {   
+            $builder
+            ->add('commentaire', TextareaType::class, [
+                'label' => "Commentaire",
+                'required' => false,
+                'attr' => [
+                    'placeholder' => "Saisir le contenu du commentaire ",
+                    'rows' => 10
+                ],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => "Merci de saisir un commentaire"
+                    ])
+                ]
+            ]);
+        }
+ 
     }
+
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Comment::class,
+            'commentFormFront' => false, 
+            'commentFormBack' => false
         ]);
     }
 }

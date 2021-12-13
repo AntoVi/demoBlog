@@ -22,9 +22,12 @@
     <div class="container">
     <h1 class="text-center my-5">
     {# Si editMode renvoi TRUE, cela veut dire que l'id possède un ID, c'est une modification #}
-   
-        Modification de l'article
-  
+    {% if editMode %}
+        modification du catalogue
+    
+    {% else %}
+        Nouveau Catalogue
+     {% endif %}
     
     </h1>
     
@@ -56,7 +59,12 @@
         <button type="submit" class="btn btn-dark btn-blog d-block mx-auto "> 
 
       
-        Enregistrer les modifications
+       {% if editMode %}
+            Modifier
+    
+        {% else %}
+            Enregister
+        {% endif %}
       
      {{ form_end(formAdminCatalogue) }}
 

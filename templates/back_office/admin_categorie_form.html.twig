@@ -1,0 +1,45 @@
+{% extends "base_admin.html.twig" %}
+
+
+{% block title %}
+    {% if editMode %}
+        Modification catégorie
+    
+    {% else %}
+        Nouvelle catégorie 
+     {% endif %}
+{% endblock %}
+
+{% block body %}
+
+    <h1 class="text-center my-5">
+    {# Si la variable editMode retourne TRUE, cela veut dire que la catégorie possède un ID, alors c une modif #}
+    {% if editMode %}
+        modification catégorie
+    
+    {% else %}
+        {# Sinon la catégorie ne possède pas d'ID, c une insertion #}
+        Nouvelle catégorie 
+     {% endif %}
+     </h1>
+
+    {{ form_start(formCategory, {'attr': {'class' : 'col-6 mx-auto' }}) }}
+
+        {{ form_row(formCategory.titre) }}
+
+        {{ form_row(formCategory.description, {'attr': {'rows' : 12 }}) }}
+
+        <button class="btn btn-dark">
+        
+            {% if editMode %}
+                Modifier
+            
+            {% else %}
+                Enregistrer
+            {% endif %}
+
+         </button>
+
+    {{ form_end(formCategory) }}
+
+{% endblock %}

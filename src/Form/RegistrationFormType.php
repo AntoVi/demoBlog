@@ -130,6 +130,20 @@ class RegistrationFormType extends AbstractType
             ]);
              
          }
+
+         elseif ($options['userBack'] == true) 
+         {
+
+            $builder
+            ->add('email', TextType::class, [
+                'required' => false,
+                'constraints' =>  new NotBlank([
+                    'message' => "Veuillez renseigner votre email."
+                ])
+           
+            ]);
+             
+         }
     }
 
   

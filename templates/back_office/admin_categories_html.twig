@@ -8,12 +8,18 @@
 
     <h1 class= "text-center">Liste des catégories</h1>
 
-    {% for message in app.flashes('success') %}
+    {# Affichage des messages utilisateur #}
 
-        <div class="col-4 mx-auto bg-success text-white p-3 mb-3">
-            {{ message }}
-        </div>
+    {% for label, messages in app.flashes(['success', 'danger']) %}
 
+        {% for message in messages %}
+        {# on se sert de l'identifiant du message (success, danger ) pour les intégrer comme classe bootstrap #}
+
+            <div class="col-6 mx-auto text-center bg-{{ label }} p-3 text-white mb-3">
+                {{ message }}
+            </div>
+            
+        {% endfor %}
     {% endfor %}
 
     <table class="table table-striped" id="table-category">
@@ -42,13 +48,18 @@
                 <td> {{ cate.titre }} </td>
                 <td> {{ cate.description }} </td>
                 <td> {{ cate.catalogues|length }} </td>
-                <td> 
-                    <a href=""> <i class="bi bi-pencil-fill"></i> </a>
-                    <a href="{{ path('app_admin_categorie_remove', {'id': cate.id}) }}" 
-                    onclick ="return(confirm('Voulez-vous réellement supprimer la catégorie n° {{cate.id }}'));">
-                        <i class="bi bi-trash-fill text-danger"></i> 
-                    </a>
-                </td>
+                
+                    <td class="d-flex flex-column"> 
+                        <a href="{{ path('app_admin_categorie_add') }}"> <i class="bi bi-plus-circle-fill text-info"></i> </a>
+
+                        <a href="{{ path('app_admin_categorie_edit', {'id': cate.id}) }}"> <i class="bi bi-pencil-fill"></i> </a>
+
+                        <a href="{{ path('app_admin_categorie_remove', {'id': cate.id}) }}" 
+                        onclick ="return(confirm('Voulez-vous réellement supprimer la catégorie n° {{cate.id }}'));">
+                            <i class="bi bi-trash-fill text-danger"></i> 
+                        </a>
+                    </td>
+                </div>
             </tr>
             
         {% endfor %}

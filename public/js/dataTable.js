@@ -17,4 +17,14 @@ $(document).ready(function() {
             { 'bSortable': false, 'aTargets': [ 1,3 ] }
         ]
     });
+
+    $('#table-comment').DataTable({
+        language: {
+            url: '/js/dataTables.french.json'
+        },
+        "aoColumnDefs": [
+            { 'bSortable': false, 'aTargets': [ 0,3,4] }
+        ]
+    });
+
 });

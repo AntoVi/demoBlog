@@ -76,12 +76,12 @@
                     {{ cat.comments|length }}
                 </td>
 
-                <td>
+                <td class="" >
                     <a href="{{ path('app_admin_catalogues_form', {'id': cat.id}) }}"><i class="bi bi-pencil-fill"></i></a>
-
+                    <br>
                     <a href="{{ path('app_admin_catalogue_remove', {'id': cat.id}) }}" 
-                    onclick ="return(confirm('Voulez-vous réellement supprimer le catalogue n° {{cat.id }}'));">
-                    <i class="bi bi-trash-fill text-danger"></i></a>
+                    onclick ="return(confirm('Voulez-vous réellement supprimer le catalogue n° {{cat.id }}')); " >
+                    <i class="bi bi-trash-fill text-danger" style="font-size: 200px;"></i></a>
                 </td>
 
                 
