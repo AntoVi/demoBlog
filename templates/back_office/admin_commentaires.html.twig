@@ -1,0 +1,91 @@
+{% extends "base_admin.html.twig" %}
+
+{% block title %}
+    BlogSymfony | Gestion des commentaires
+{% endblock %}
+
+{% block body %}
+
+    {% for message in app.flashes('success') %}
+        <div  class="col-4 mx-auto text-center bg-success p-3 text-white mb-3">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <h1 class= "text-center">Liste des commentaires</h1>
+
+     <table class="table table-striped" id="table-comment">
+        <thead>
+            {# colonnes : objet (BackOfficeController) qui contient tous les noms des <champs>
+            <colonnes de la table SQL catalogue #}
+            <tr>
+            {% for data in table %}
+
+                {% if data != 'id' %}
+
+                    {# capitalize : filtre TWIG : filtre twig permettant de mettre la 1ère lette de la chaine de catatère en majuscule #}
+                <th>{{ data|capitalize }}</th> 
+                    
+                {% endif %}
+
+            
+            
+            {% endfor %}
+
+            <th class="text-center">Catalogue</th>
+            <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for com in comments %}
+
+            <tr>
+
+                <td>
+                    {{ com.commentaire|slice(0,60)|striptags }} [...]
+                </td>
+
+                <td>
+                    {{ com.auteur}}
+                </td>
+
+                <td>
+                    {{ com.date|date('d/m/Y à H:i:s')}}
+                </td>
+
+                <td> 
+                
+                   <a href=" {{ path('blog_show', {'id': com.article.id}) }}" class="link-primary"> {{ com.article.titre }} </a> 
+                
+                </td>
+
+
+                
+        
+
+                <td class="d-flex flex-column">
+                    <a href="{{ path('app_admin_commentaire_edit', {'id': com.id}) }}"><i class="bi bi-pencil-fill"></i></a>
+
+                    <a href="{{ path('app_admin_commentaire_remove', {'id': com.id}) }}" 
+                    onclick ="return(confirm('Voulez-vous réellement supprimer le commentaire n° {{com.id }}'));">
+                    <i class="bi bi-trash-fill text-danger"></i></a>
+                </td>
+
+                
+            
+                    
+                {% endfor %}
+
+                    
+            
+            </tr>
+
+        </tbody>
+
+    </table>    
+
+{% endblock %}

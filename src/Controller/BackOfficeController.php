@@ -7,6 +7,7 @@ use App\Entity\Comment;
 use App\Entity\Catalogue;
 use App\Entity\Category;
 use App\Form\CatalogueType;
+use App\Form\CategoryType;
 use App\Form\CommentairesType;
 use App\Repository\UserRepository;
 use App\Repository\CommentRepository;
@@ -76,109 +77,6 @@ class BackOfficeController extends AbstractController
         ]);
     }
 
-    
-
-    #[Route('/admin/categories', name: 'app_admin_categorie')]
-    #[Route('/admin/categories/{id}/remove', name: 'app_admin_categorie_remove')]
-    public function adminCategories(CategoryRepository $repoCategory, EntityManagerInterface $manager, Category $cateRemove = null): Response
-    {
-        /*
-        Exo : affichage et suppression catégorie 
-        1. création d'une nouvelle route '/admin/categories 
-        2. création d'une nouvelle méthode adminCategories()
-        3. Création d'un nouveau template 
-        4 . Selectionner les noms des champs/colonnes de la table Category, les transmettre au template et afficher
-        5. Se
-        */
-
-        $colonnes = $manager->getClassMetadata(Category::class)->getFieldNames();
-       
-        $categories = $repoCategory->findAll();
-
-        if($cateRemove)
-        {
-            $id = $cateRemove->getId();
-
-            $manager->remove($cateRemove);
-            $manager->flush();
-
-            $this->addFlash('success', "La catégorie $id a été supprimé avec succès");
-
-            return $this->redirectToRoute('app_admin_categorie');
-
-
-        }
-      
-        
-
-        return $this->render('back_office/admin_categories_html.twig', [
-            'colonnes' => $colonnes,
-            'categories' => $categories
-        ]);
-    }
-
-    #[Route('/admin/commentaires', name: 'app_admin_commentaire')]
-    #[Route('/admin/commentaires/{id}/remove', name: 'app_admin_commentaire_remove')]
-    public function adminCommentaires( CommentRepository $repoComment,EntityManagerInterface $manager, Comment $comRemove = null): Response
-    {
-       
-        $table = $manager->getClassMetadata(Comment::class)->getFieldNames();
-
-        // dd($table);
-
-        $comments = $repoComment->findAll();
-
-        if($comRemove)
-        {
-            $id = $comRemove->getId();
-
-            $manager->remove($comRemove);
-
-            $manager->flush();
-
-            $this->addFlash('success', "Le commentaire n° $id a été supprimé");
-
-
-            return $this->redirectToRoute('app_admin_commentaire');
-        }
-
-
-
-        return $this->render('back_office/admin_commentaires_html.twig', [
-            'table' => $table,
-            'comments' => $comments
-        ]);
-    }
-
-    #[Route('/admin/users', name: 'app_admin_user')]
-    #[Route('/admin/users/{id}/remove', name: 'app_admin_user_remove')]
-    public function adminUsers(UserRepository $repoUser, EntityManagerInterface $manager, User $useRemove = null): Response
-    {
-
-        $table = $manager->getClassMetadata(User::class)->getFieldNames();
-        // dd($table);
-        $user = $repoUser->findAll();
-
-        if($useRemove)
-        {
-            $id = $useRemove->getId();
-
-            $manager->remove($useRemove);
-            $manager->flush();
-
-            $this->addFlash('success', "L'utilisateur $id a été supprimé avec succés");
-
-            return $this->redirectToRoute('app_admin_user');
-        }
-
-
-        
-
-        return $this->render('back_office/admin_users_html.twig', [
-            'table' => $table,
-            'user' => $user
-        ]);
-    }
     #[Route('/admin/catalogues/new', name: 'app_admin_catalogues_create')]
     #[Route('/admin/catalogues/{id}/edit', name: 'app_admin_catalogues_form')]
      public function adminCataloguesForm(Catalogue $catalogue = null, Request $request, EntityManagerInterface $manager,
@@ -270,11 +168,6 @@ class BackOfficeController extends AbstractController
 
             // FIN TRAITEMENT PHOTO
 
-           
-
-           
-          
-
             $manager->persist($catalogue); 
             $manager->flush();
             $id = $catalogue->getId();
@@ -285,19 +178,146 @@ class BackOfficeController extends AbstractController
             ]);
         }
 
-         return $this->render('back_office/admin_catalogues_form_html.twig', [
+         return $this->render('back_office/admin_catalogues_form.html.twig', [
              'formAdminCatalogue' => $formAdminCatalogue->createView(), 
              'editMode' => $catalogue->getId(),
              'photoActuelle' => $catalogue->getPhoto() // renvoi la photo de l'article pour l'afficher en cas de mofidication
          ]);
      }
 
-     #[Route('/admin/commentaires/{id}/edit', name: 'app_admin_commentaire_edit')]
+
+    #[Route('/admin/categories', name: 'app_admin_categorie')]
+    #[Route('/admin/categories/{id}/remove', name: 'app_admin_categorie_remove')]
+    public function adminCategories(CategoryRepository $repoCategory, EntityManagerInterface $manager, Category $cateRemove = null): Response
+    {
+        /*
+        Exo : affichage et suppression catégorie 
+        1. création d'une nouvelle route '/admin/categories 
+        2. création d'une nouvelle méthode adminCategories()
+        3. Création d'un nouveau template 
+        4 . Selectionner les noms des champs/colonnes de la table Category, les transmettre au template et afficher
+        5. Se
+        */
+
+        $colonnes = $manager->getClassMetadata(Category::class)->getFieldNames();
+       
+        $categories = $repoCategory->findAll(); // Selest * FROM category + FETCH ALL
+
+        if($cateRemove)
+        {
+            $titreCat = $cateRemove->getTitre();
+
+            // getCatalogues() retourne tous les articles liés à la catégorie, si le résultat est vide, cela veut dire 
+            // qu'aucun article n'est lié à la catégorie, on entre dans le IF et on supprime la catégorie
+
+            if($cateRemove->getCatalogues()->isEmpty())
+            {
+                $this->addFlash('success', "La catégorie $titreCat a été supprimé avec succès");
+           
+                $manager->remove($cateRemove);
+                $manager->flush();
+            }
+            else  // Sinon, des articles sont encore liés à la catégorie, alors on affiche un message d'erreur à l'utilisateur
+            {
+                $this->addFlash('danger', "Impossible de supprimer la catégorie '$titreCat' car des article y sont toujours associés");
+            }
+
+            return $this->redirectToRoute('app_admin_categorie');
+
+
+
+
+        }
+      
+        
+
+        return $this->render('back_office/admin_categories_html.twig', [
+            'colonnes' => $colonnes,
+            'categories' => $categories
+        ]);
+    }
+
+    #[Route('/admin/categories/add', name: 'app_admin_categorie_add')]
+    #[Route('/admin/categories/{id}/edit', name: 'app_admin_categorie_edit')]
+    public function adminCategorieForm(Category $category = null, EntityManagerInterface $manager, Request $request): Response
+    {
+
+        if(!$category)
+        {
+            $category = new Category;
+        }
+        
+
+        $formCategory = $this->createForm(CategoryType::class, $category );
+
+        $formCategory->handleRequest($request);
+
+        if($formCategory->isSubmitted() && $formCategory->isValid())
+        {
+            if($category->getId())
+                $txt = 'modifiée';
+            else 
+                $txt = 'ajoutée';
+            $manager->persist($category);
+            $manager->flush();
+
+            $titreCat = $category->getTitre();
+
+            $this->addFlash('success', "La catégorie '$titreCat' a été $txt avec succès");
+
+            return $this->redirectToRoute('app_admin_categorie');
+        }
+
+
+
+        return $this->render('back_office/admin_categorie_form.html.twig', [
+            "formCategory" => $formCategory->createView(),
+            'editMode' => $category->getId()
+           
+        ]);
+    }
+
+    #[Route('/admin/commentaires', name: 'app_admin_commentaire')]
+    #[Route('/admin/commentaires/{id}/remove', name: 'app_admin_commentaire_remove')]
+    public function adminCommentaires( CommentRepository $repoComment,EntityManagerInterface $manager, Comment $comRemove = null): Response
+    {
+       
+        $table = $manager->getClassMetadata(Comment::class)->getFieldNames();
+
+        // dd($table);
+
+        $comments = $repoComment->findAll();
+        // dd($comments);
+        if($comRemove)
+        {
+            $id = $comRemove->getId();
+
+            $manager->remove($comRemove);
+
+            $manager->flush();
+
+            $this->addFlash('success', "Le commentaire n° $id a été supprimé");
+
+
+            return $this->redirectToRoute('app_admin_commentaire');
+        }
+
+
+
+        return $this->render('back_office/admin_commentaires.html.twig', [
+            'table' => $table,
+            'comments' => $comments
+        ]);
+    }
+
+    #[Route('/admin/commentaires/{id}/edit', name: 'app_admin_commentaire_edit')]
     public function adminCommentairesEdit( Comment $comment,EntityManagerInterface $manager,Request $request): Response
     {
 
         
-        $formCommentaires = $this->createForm(CommentairesType::class, $comment);
+        $formCommentaires = $this->createForm(CommentairesType::class, $comment, [
+            'commentFormBack' => true
+        ]);
 
         $formCommentaires->handleRequest($request);
 
@@ -314,10 +334,50 @@ class BackOfficeController extends AbstractController
        
 
 
-        return $this->render('back_office/admin_commentaires_edit_html.twig', [
+        return $this->render('back_office/admin_commentaires_edit.html.twig', [
            'formCommentaires' => $formCommentaires->createView(),
         ]);
     }
 
-     
+    #[Route('/admin/users', name: 'app_admin_user')]
+    #[Route('/admin/users/{id}/remove', name: 'app_admin_user_remove')]
+    public function adminUsers(UserRepository $repoUser, EntityManagerInterface $manager, User $useRemove = null): Response
+    {
+
+        $table = $manager->getClassMetadata(User::class)->getFieldNames();
+        // dd($table);
+        $user = $repoUser->findAll();
+
+        if($useRemove)
+        {
+            $id = $useRemove->getId();
+
+            $manager->remove($useRemove);
+            $manager->flush();
+
+            $this->addFlash('success', "L'utilisateur $id a été supprimé avec succés");
+
+            return $this->redirectToRoute('app_admin_user');
+        }
+
+
+        
+
+        return $this->render('back_office/admin_users.html.twig', [
+            'table' => $table,
+            'user' => $user
+        ]);
+    }
+
+    #[Route('/admin/users/{id}/edit', name: 'app_admin_user_edit')]
+    public function adminUsersEdit()
+    {
+
+        return $this->render('back_office/admin_users_edit.html.twig', [
+
+        ]);
+    }
+
+
+    
 }

@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Catalogue;
+use App\Entity\User;
 use App\Entity\Comment;
+use App\Entity\Category;
+use App\Entity\Catalogue;
 use App\Form\CatalogueType;
 use App\Form\CommentairesType;
+use App\Repository\CategoryRepository;
 use App\Repository\CatalogueRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -29,11 +32,23 @@ class BlogController extends AbstractController
         ]);
 
     }
+    // Cette méthode permet de selectionner toutes les catégories de la BDD mais ne possède pas de route
+    // Les catégories seront intégrées dans base.html.twig
+    public function allCategory(CategoryRepository $repoCategory)
+    {
+        $categorys = $repoCategory->findAll();
+
+        return $this->render('blog/categorys_list.html.twig', [
+            'categorys' => $categorys
+        ]);
+    }
 
 
     #[Route('/blog', name: 'blog')]
-    public function blog(CatalogueRepository $repoCatalogue): Response
+    #[Route('/blog/categorie/{id}', name: 'blog_categorie')]
+    public function blog(CatalogueRepository $repoCatalogue, Category $category = null): Response
     {
+        // dd($category->getCatalogues());
         /*
 
         Injections de dépendances : c'est un des fondements de Symfony, ici notre méthode DEPEND de la classe 
@@ -67,10 +82,27 @@ class BlogController extends AbstractController
         // dump() / dd() : outil de debug Symfony
         // dump($repoCatalogue);
 
-        //findAll() : méthode issue de la classe ArticleRepository permettant 
-        // de selectionner l'ensemble de la table SQL et de récupérer un tableau
-        // multi contenant l'ensemble des articles stocké en BDD
-        $catalogue = $repoCatalogue->findAll(); // SELECT  * FROM catalogue + FETCH_ALL
+        
+
+        //Si la condition retourne TRUE, cela veut dire que l'utilisateur a cliqué sur le lien d'une catégorie
+        // dans la nav et par conséquent, $category contient une catégorie stocké en BDD, alors on entre dans le IF
+        if($category)
+        {
+            // Grace aux relations bi-directgionnelle, lorsque nous selectionnons une catégorie en BDD, nous avons
+            // accès automatiquement à tous les articles liés à cette catégorie
+            // GetCatalogues() retourne un array multi contenant tous les articles liés à la catéghorie transmise dans l'URL
+            $catalogue = $category->getCatalogues();
+        }
+        else // Sinon aucune catégorie n'est transmise en URL, alors on selectionne tous les articles dans la BDD
+        {
+            //findAll() : méthode issue de la classe ArticleRepository permettant 
+            // de selectionner l'ensemble de la table SQL et de récupérer un tableau
+            // multi contenant l'ensemble des articles stocké en BDD
+
+            $catalogue = $repoCatalogue->findAll(); // SELECT  * FROM catalogue + FETCH_ALL
+        }
+
+        
        
         // dd($catalogue);
 
@@ -120,7 +152,8 @@ class BlogController extends AbstractController
 
         // Si la condition IF retourne TRUE, cela veut dire que $catalogue contient un article stocké
         // en BDD, on stock la photo actuelle de l'article dans la variable $photoActuelle
-
+        
+        
         if($catalogue)
         {
             $photoActuelle = $catalogue->getPhoto();
@@ -248,7 +281,7 @@ class BlogController extends AbstractController
 
 
     #[Route('/blog/{id}', name:'blog_show')]
-    public function blogShow(Catalogue $catalogue, Request $request, EntityManagerInterface $manager): Response 
+    public function blogShow(Catalogue $catalogue, Request $request, EntityManagerInterface $manager ): Response 
     {
 
         /*
@@ -263,12 +296,15 @@ class BlogController extends AbstractController
 
             // Cette méthode mise à disposition retourne un objet app/entity/article contnant toute les
             //données de l'utilisateur authentifié sur le site
-            $user =$this->getUser();
           
-        
+            $user = $this->getUser();
+            // dd($user);
             $comments = new Comment;
-        
-        $formCommentaires = $this->createForm(CommentairesType::class, $comments); 
+
+        $formCommentaires = $this->createForm(CommentairesType::class, $comments ,[
+            'commentFormFront' => true // on indique dans quelle condition IF on entre dans le fichier
+            // 'App\form\CommentType' et quel formulaire nous affichons 
+        ]); 
 
         $formCommentaires->handleRequest($request);
 
@@ -276,13 +312,16 @@ class BlogController extends AbstractController
         
         if($formCommentaires->isSubmitted() && $formCommentaires->isValid())
         {
-            
-
+                // getUser() : méthode de Symfony qui retourne un objet (App\Entity\User) contenant
+                // les informations de l'utilisateur authentifié sur le blog
+                $user = $this->getUser();
             
                 $comments->setDate(new \DateTime());
 
                 $comments->setArticle($catalogue); // on relie le commentaire le catalogue
 
+                $comments->setAuteur( $user->getPrenom() . ' ' . $user->getNom());
+                
 
                 $manager->persist($comments); 
                 $manager->flush();
@@ -317,7 +356,8 @@ class BlogController extends AbstractController
         return $this->render('blog/blog_show.html.twig', [
             'catalogue' => $catalogue, // on transmet au template l'article selectionné en BDD afin que 
             // twig puisse traiter et afficher les données sur la page
-            'formCommentaires' => $formCommentaires->createView()
+            'formCommentaires' => $formCommentaires->createView(),
+            'user' => $user
         ]);
     }
 
