@@ -16,74 +16,88 @@
 
     <h1 class= "text-center">Liste des utilisateurs</h1>
 
-     <table class="table table-striped">
-        
-        <tr>
-        {% for data in table %}
+     <table class="table table-striped" id="table-user">
 
-            {% if data != 'id' and data != 'password' %}
+        <thead>
+            <tr>
+            {% for data in table %}
 
-                
-            <th>{{ data|capitalize }}</th> 
-                
-            {% endif %}
+                {% if data != 'id' and data != 'password' %}
 
-        
-        
-        {% endfor %}
+                    
+                <th>{{ data|capitalize }}</th> 
+                    
+                {% endif %}
 
-        <th>Actions</th>
-
-
-       
-
-        </tr>
-        {% for uti in user %}
-        
-        <tr>
-
-            <td>
-                {{ uti.email }}
-            </td>
-
-            <td>
-                {{ uti.roles[0]|slice(5,15) }}
-            </td>
-            <td>
-                {{ uti.prenom }}
-            </td>
-
-            <td>
-                {{ uti.nom }}
-            </td>
-
-            <td>
-                {{ uti.adresse }}
-            </td>
-
-           <td>
-                {{ uti.ville }}
-            </td>
-
-           <td>
-                {{ uti.codePostal }}
-            </td>
-
-            <td class="d-flex flex-column">
-                <a href=" {{ path('app_admin_user_edit', {'id': uti.id}) }}"><i class="bi bi-pencil-fill"></i></a>
-
-                <a href="{{ path('app_admin_user_remove', {'id': uti.id}) }}" 
-                onclick ="return(confirm('Voulez-vous réellement supprimer l\'utilisateur n° {{uti.id }}'));">
-                <i class="bi bi-trash-fill text-danger"></i></a>
-            </td>
             
-            </th>
-                
+            
             {% endfor %}
 
-                
+            <th>Actions</th>
+
+
         
-       </tr>
+
+            </tr>
+
+        <thead>
+
+        <tbody>
+
+            {% for uti in user %}
+            
+            <tr>
+
+                <td>
+                    {{ uti.email }}
+                </td>
+                
+                <td>
+                {% for data in uti.roles %}
+                    {% if data == 'ROLE_ADMIN' %}
+                        ADMIN
+                    {% elseif data == '' %}
+                        USER
+                    {% endif %}
+                {% endfor %}
+                </td>
+                <td>
+                    {{ uti.prenom }}
+                </td>
+
+                <td>
+                    {{ uti.nom }}
+                </td>
+
+                <td>
+                    {{ uti.adresse }}
+                </td>
+
+                <td>
+                    {{ uti.ville }}
+                </td>
+
+                <td>
+                    {{ uti.codePostal }}
+                </td>
+
+                <td class="d-flex flex-column">
+                    <a href=" {{ path('app_admin_user_edit', {'id': uti.id}) }}"><i class="bi bi-pencil-fill"></i></a>
+
+                    <a href="{{ path('app_admin_user_remove', {'id': uti.id}) }}" 
+                    onclick ="return(confirm('Voulez-vous réellement supprimer l\'utilisateur n° {{uti.id }}'));">
+                    <i class="bi bi-trash-fill text-danger"></i></a>
+                </td>
+                
+                </th>
+                    
+                {% endfor %}
+
+                    
+            
+        </tr>
+
+        </tbody>
 
     </table>    
 

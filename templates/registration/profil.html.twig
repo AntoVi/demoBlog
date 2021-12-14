@@ -9,7 +9,7 @@
 
 {% block body %}
 
-
+ {{dump(user)}}
 
 <div class="col-md-5 mx-auto card shadow-sm mb-5">
     <h5 class="card-header text-center">Vos données personnelles</h5>
@@ -41,8 +41,51 @@
 
 
         <a href="{{ path('app_profil_edit', {'id': app.user.id}) }}" class="btn btn-dark">Modifier</a>
+
+        
     </div>
 </div>
 
+
+<h4 class="text-center my-5">  Vos catalogues </h4>
+
+{% if user.catalogue is not empty  %}
+    
+
+
+    <table class="table table-borderless" id="table-profil"> 
+        <thead>
+
+            <tr>
+
+                <th> Titre </th>
+                <th class="text-center"> Catégorie </th>
+                <th class="text-center"> Date de publication</th>
+                <th class="text-center"> Edit</th>
+
+            </tr>
+
+        </thead>
+        <tbody>
+        {% for data   in user.catalogue %}
+            
+            <tr>
+                <td>
+                    <a href=" {{ path('blog_show', {'id': data.id}) }}" class="link-secondary"> {{ data.titre }} </a>
+                </td>
+                <td class="text-center">
+                    <a href="{{ path('blog_categorie', {'id': data.category.id}) }}" class="link-secondary"> {{ data.category.titre }} </a>
+                </td>
+                <td class="text-center"> {{ data.date|date('d/m/Y à H:i:s') }} </td>
+                <td class="text-center">
+                    <a href="{{ path('blog_edit', {'id': data.id}) }}"> <i class="bi bi-pencil-fill"></i></a>
+                </td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endif %}
     
 {% endblock %}
