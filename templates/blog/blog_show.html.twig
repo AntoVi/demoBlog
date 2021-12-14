@@ -37,7 +37,15 @@
                 <div class="col p-4 d-flex flex-column position-static">
                 <strong class="d-inline-block mb-2 text-success">{{ catalogue.category.titre }}</strong>
                 <h3 class="mb-0">{{catalogue.titre}}</h3>
-                <h4 class="mb-0">publié le {{catalogue.date|date('d/m/Y')}} à {{catalogue.date|date('H:i:s')}}</h4>
+
+                <h4 class="mb-0">Publié par 
+                
+                    {% if catalogue.user is not empty %}
+                        {{ catalogue.user.prenom }} {{ catalogue.user.nom }} 
+                    {% endif %}
+
+                le {{catalogue.date|date('d/m/Y')}} à {{catalogue.date|date('H:i:s')}}</h4>
+
                 <p class="mb-auto">{{catalogue.contenu|slice(0, 100)|striptags}}[..]</p>
 
                

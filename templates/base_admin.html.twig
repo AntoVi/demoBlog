@@ -63,7 +63,7 @@
                 </a>
                 {# Renvoi le nom de la route définit dans le controller #}
                 <hr>
-                {{ dump(app.request.attributes.get('_route')) }}
+                {# {{ dump(app.request.attributes.get('_route')) }} #}
                 {# on stock le nom de la route dans une variable twig #}
                 {% set route_name = app.request.attributes.get('_route') %}
                 <ul class="nav nav-pills flex-column mb-auto">

@@ -27,4 +27,22 @@ $(document).ready(function() {
         ]
     });
 
+    $('#table-user').DataTable({
+        language: {
+            url: '/js/dataTables.french.json'
+        },
+        "aoColumnDefs": [
+            { 'bSortable': false, 'aTargets': [0,1,4,6] }
+        ]
+    });
+
+    $('#table-profil').DataTable({
+        language: {
+            url: '/js/dataTables.french.json'
+        },
+        "aoColumnDefs": [
+            { 'bSortable': false, 'aTargets': [3] }
+        ]
+    });
+
 });

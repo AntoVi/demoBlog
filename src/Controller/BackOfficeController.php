@@ -9,6 +9,7 @@ use App\Entity\Category;
 use App\Form\CatalogueType;
 use App\Form\CategoryType;
 use App\Form\CommentairesType;
+use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Repository\CommentRepository;
 use App\Repository\CategoryRepository;
@@ -281,15 +282,18 @@ class BackOfficeController extends AbstractController
     #[Route('/admin/commentaires/{id}/remove', name: 'app_admin_commentaire_remove')]
     public function adminCommentaires( CommentRepository $repoComment,EntityManagerInterface $manager, Comment $comRemove = null): Response
     {
-       
+        // Selection du nom des champs/colonnes
         $table = $manager->getClassMetadata(Comment::class)->getFieldNames();
 
         // dd($table);
 
         $comments = $repoComment->findAll();
         // dd($comments);
+
+        // SUPPRESSION COMMENTAIRE
         if($comRemove)
         {
+            // Stockage de l'auteur du com dans une variable afin d'intégrer le message de validation
             $id = $comRemove->getId();
 
             $manager->remove($comRemove);
@@ -347,6 +351,7 @@ class BackOfficeController extends AbstractController
         $table = $manager->getClassMetadata(User::class)->getFieldNames();
         // dd($table);
         $user = $repoUser->findAll();
+        // dd($user);
 
         if($useRemove)
         {
@@ -370,11 +375,35 @@ class BackOfficeController extends AbstractController
     }
 
     #[Route('/admin/users/{id}/edit', name: 'app_admin_user_edit')]
-    public function adminUsersEdit()
+    public function adminUsersEdit(User $user,EntityManagerInterface $manager, Request $request)
     {
+        $formBackUser = $this->createForm(RegistrationFormType::class, $user, [
+            'userBack' => true
+        ]);
+
+       
+      
+
+        $formBackUser->handleRequest($request);
+
+        if($formBackUser->isSubmitted() && $formBackUser->isValid())
+        {
+
+           
+
+            $manager->persist($user);
+            $manager->flush();
+
+            $this->addFlash('success', "Le rôle a été modifié avec succès");
+
+            return $this->redirectToRoute('app_admin_user');
+
+        }
+
+
 
         return $this->render('back_office/admin_users_edit.html.twig', [
-
+            'formBackUser' => $formBackUser->createView()
         ]);
     }
 

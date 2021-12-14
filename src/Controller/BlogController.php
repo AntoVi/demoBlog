@@ -191,6 +191,12 @@ class BlogController extends AbstractController
                 $catalogue->setDate(new \DateTime());
 
 
+                // On relie l'article publié à l'utilisateur en BDD
+                // On relie la clé étrangère dans la BDD
+                // setUser() attend en argument l'objet APP\ENTITY\USer
+                $catalogue->setUser($this->getUser());
+
+
             // DEBUT Traitement DE LA PHOTO 
             // On récupère toutes les informations de l'image uploadée dans le formulaire 
             $photo = $formCatalogue->get('photo')->getData();
@@ -361,5 +367,18 @@ class BlogController extends AbstractController
         ]);
     }
 
-   
+    /*
+
+    Exo : le but est de relier les utilisateurs aux articles, lorsque l'internaute poste un article,
+    il faut une relation entre Article et User 
+    Créer une nouvelle propriété dans l'entité user 'article' et fait une relation OneToMany, cette propriété
+    peut être null 
+    Lorsque l'internaute poste un nouveau catalogue, faites en sorte de renseigner la clé étrangère 'user_id' afin
+    que le catalogue soit relié à l'utilisateur connecté
+    Dans la page profil de l'utilisateur, afficher dans une liste tous les catalogues posté par l'internaute
+    (titre catalogue (lien qui redirige vers l'article), date/heure et un lien pour la modif)
+
+    */
+
+
 }

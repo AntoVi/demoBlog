@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -61,6 +63,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="integer")
      */
     private $codePostal;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Catalogue::class, mappedBy="user")
+     */
+    private $catalogue;
+
+    
+
+    public function __construct()
+    {
+        $this->catalogues = new ArrayCollection();
+        $this->catalogue = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -191,4 +206,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection|Catalogue[]
+     */
+    public function getCatalogue(): Collection
+    {
+        return $this->catalogue;
+    }
+
+    public function addCatalogue(Catalogue $catalogue): self
+    {
+        if (!$this->catalogue->contains($catalogue)) {
+            $this->catalogue[] = $catalogue;
+            $catalogue->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCatalogue(Catalogue $catalogue): self
+    {
+        if ($this->catalogue->removeElement($catalogue)) {
+            // set the owning side to null (unless already changed)
+            if ($catalogue->getUser() === $this) {
+                $catalogue->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    
 }
